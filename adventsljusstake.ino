@@ -4,7 +4,7 @@
 #define NUMBER_OF_PINS 7
 #define PIN_NEOPIXEL D6
 #define FAVICON_URL String("https://i.imgur.com/10tyXWl.png")
-#define NUMBER_OF_MODES 6
+#define NUMBER_OF_MODES 13
 
 #define SERVER_PORT 80
 
@@ -201,6 +201,89 @@ void mode_5() {
   }
 }
 
+void mode_6() {
+  strip.setPixelColor(0, orange);
+  strip.setPixelColor(1, 0);
+  strip.setPixelColor(2, 0);
+  strip.setPixelColor(3, 0);
+  strip.setPixelColor(4, 0);
+  strip.setPixelColor(5, 0);
+  strip.setPixelColor(6, 0);
+  strip.show();
+  delay(1000);
+}
+
+void mode_7() {
+  strip.setPixelColor(0, orange);
+  strip.setPixelColor(1, orange);
+  strip.setPixelColor(2, 0);
+  strip.setPixelColor(3, 0);
+  strip.setPixelColor(4, 0);
+  strip.setPixelColor(5, 0);
+  strip.setPixelColor(6, 0);
+  strip.show();
+  delay(1000);
+}
+
+void mode_8() {
+  strip.setPixelColor(0, orange);
+  strip.setPixelColor(1, orange);
+  strip.setPixelColor(2, orange);
+  strip.setPixelColor(3, 0);
+  strip.setPixelColor(4, 0);
+  strip.setPixelColor(5, 0);
+  strip.setPixelColor(6, 0);
+  strip.show();
+  delay(1000);
+}
+
+void mode_9() {
+  strip.setPixelColor(0, orange);
+  strip.setPixelColor(1, orange);
+  strip.setPixelColor(2, orange);
+  strip.setPixelColor(3, orange);
+  strip.setPixelColor(4, 0);
+  strip.setPixelColor(5, 0);
+  strip.setPixelColor(6, 0);
+  delay(1000);
+}
+
+void mode_10() {
+  strip.setPixelColor(0, orange);
+  strip.setPixelColor(1, orange);
+  strip.setPixelColor(2, orange);
+  strip.setPixelColor(3, orange);
+  strip.setPixelColor(4, orange);
+  strip.setPixelColor(5, 0);
+  strip.setPixelColor(6, 0);
+  strip.show();
+  delay(1000);
+}
+
+void mode_11() {
+  strip.setPixelColor(0, orange);
+  strip.setPixelColor(1, orange);
+  strip.setPixelColor(2, orange);
+  strip.setPixelColor(3, orange);
+  strip.setPixelColor(4, orange);
+  strip.setPixelColor(5, orange);
+  strip.setPixelColor(6, 0);
+  strip.show();
+  delay(1000);
+}
+
+void mode_12() {
+  strip.setPixelColor(0, orange);
+  strip.setPixelColor(1, orange);
+  strip.setPixelColor(2, orange);
+  strip.setPixelColor(3, orange);
+  strip.setPixelColor(4, orange);
+  strip.setPixelColor(5, orange);
+  strip.setPixelColor(6, orange);
+  strip.show();
+  delay(1000);
+}
+
 String constantHeaders() {
   String headers = "\r\n";
   // Clickjacking protection
@@ -348,13 +431,20 @@ void handleHttpRequest(WiFiClient client, String request) {
     body += "  setStatusMessage('TODO: Pick color');\r\n";
     body += "}";
   }
-  else if (requestPath.equals("/api/switch"))  {
-    lightMode = (lightMode + 1) % NUMBER_OF_MODES;
-    // Reset brightness to max, in case previous mode has changed it
-    strip.setBrightness(255);
+  else if (requestPath.equals("/api/switch"))  {    
     headers = responseOkHtmlHeader();
-    body = "Current mode: ";
-    body += lightMode;
+    body = switchModeNext();
+  }
+  else if (requestPath.indexOf('setMode') > 0)  {
+    int newMode = getValue(requestPath, '/', 3).toInt();    
+    headers = responseOkHtmlHeader();
+    body = switchMode(newMode);
+  }
+  else if (requestPath.indexOf('setLights') > 0)  {
+    int newMode = getValue(requestPath, '/', 3).toInt();
+    newMode = newMode + 5;
+    headers = responseOkHtmlHeader();
+    body = switchMode(newMode);
   }
   else if (requestPath.equals("/api/setcolor")) {
     headers = responseOkHtmlHeader();
@@ -383,6 +473,34 @@ void handleHttpRequest(WiFiClient client, String request) {
   Serial.println("Response sent");
 }
 
+String switchMode(int modeNum){  
+      lightMode = modeNum;
+    // Reset brightness to max, in case previous mode has changed it
+    strip.setBrightness(255);
+    String ret = "Current mode: ";
+    ret += lightMode;
+    return ret;
+}
+
+String switchModeNext(){  
+    return switchMode((lightMode + 1) % NUMBER_OF_MODES);
+}
+
+String getValue(String data, char separator, int index){
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++){
+    if(data.charAt(i)==separator || i==maxIndex){
+        found++;
+        strIndex[0] = strIndex[1]+1;
+        strIndex[1] = (i == maxIndex) ? i+1 : i;
+    }
+  }
+
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
 
 void loop() {
   // Check if a client has connected
@@ -432,6 +550,27 @@ void loop() {
       break;
     case 5:
       mode_5();
+      break;
+    case 6:
+      mode_6();
+      break;
+    case 7:
+      mode_7();
+      break;
+    case 8:
+      mode_8();
+      break;
+    case 9:
+      mode_9();
+      break;
+    case 10:
+      mode_10();
+      break;
+    case 11:
+      mode_11();
+      break;
+    case 12:
+      mode_12();
       break;
     default:
       delay(200);
