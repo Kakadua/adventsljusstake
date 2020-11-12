@@ -245,6 +245,7 @@ void mode_9() {
   strip.setPixelColor(4, 0);
   strip.setPixelColor(5, 0);
   strip.setPixelColor(6, 0);
+  strip.show();
   delay(1000);
 }
 
